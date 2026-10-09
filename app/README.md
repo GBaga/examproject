@@ -63,6 +63,7 @@ src/
 
 ## Deploy (Vercel)
 
+- **Live:** https://examproject-taupe.vercel.app
 - **Root Directory:** `app`
 - **Framework Preset:** Vite
 - `vercel.json` უზრუნველყოფს SPA routing-ს (გვერდის განახლებისას 404 არ ჩნდება).
