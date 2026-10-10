@@ -1,7 +1,7 @@
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useMemo } from 'react'
-import { MapContainer, Marker, Polyline, Popup, TileLayer, Tooltip } from 'react-leaflet'
+import { AttributionControl, MapContainer, Marker, Polyline, Popup, TileLayer, Tooltip, ZoomControl } from 'react-leaflet'
 import { CITIES, getCity } from '../../lib/cities'
 
 // Leaflet-ის სტანდარტული PNG ხატულები Vite-ში ბილიკის პრობლემას იწვევს,
@@ -41,9 +41,17 @@ export default function RouteMap({ from, to, height = 320, showAllCities = true 
 
   return (
     <div className="overflow-hidden rounded-2xl border border-line" style={{ height }}>
-      <MapContainer bounds={bounds} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+      <MapContainer
+        bounds={bounds}
+        scrollWheelZoom={false}
+        zoomControl={false}
+        attributionControl={false}
+        style={{ height: '100%', width: '100%' }}
+      >
+        <ZoomControl zoomInTitle="გადიდება" zoomOutTitle="დაპატარავება" />
+        <AttributionControl prefix={false} />
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-ის მონაწილეები'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {showAllCities &&

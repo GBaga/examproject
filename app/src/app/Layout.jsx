@@ -6,12 +6,13 @@ import { resetDb } from '../lib/api/client'
 import { formatMoney } from '../lib/format'
 import { ROLE_LABELS, useAuth } from '../store/authStore'
 
-// ნავიგაცია ემთხვევა Git მოდულის კონფლიქტის გადაწყვეტას: Home / About + Dashboard / Settings
+// ნავიგაცია ემთხვევა Git მოდულის კონფლიქტის გადაწყვეტას: Home / About + Dashboard / Settings (ქართულად)
+// ქართული სახელები გრძელია, ამიტომ სრული მენიუ ჩანს lg-დან, უფრო ვიწრო ეკრანზე — ჰამბურგერი
 const NAV = [
-  { to: '/', label: 'Home', end: true },
-  { to: '/about', label: 'About' },
-  { to: '/dashboard', label: 'Dashboard' },
-  { to: '/settings', label: 'Settings' },
+  { to: '/', label: 'მთავარი', end: true },
+  { to: '/about', label: 'პროექტის შესახებ' },
+  { to: '/dashboard', label: 'სამართავი პანელი' },
+  { to: '/settings', label: 'პარამეტრები' },
 ]
 
 function Logo() {
@@ -19,8 +20,8 @@ function Logo() {
     <Link to="/" className="flex items-center gap-2 font-bold text-brand-900">
       <img src="/favicon.svg" alt="" className="size-8" />
       <span className="leading-tight">
-        Logistics
-        <span className="block text-xs font-medium text-muted">Platform</span>
+        ლოჯისტიკა
+        <span className="block text-xs font-medium text-muted">პლატფორმა</span>
       </span>
     </Link>
   )
@@ -66,7 +67,7 @@ export default function Layout() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
           <Logo />
 
-          <nav className="hidden items-center gap-1 md:flex" aria-label="მთავარი ნავიგაცია">
+          <nav className="hidden items-center gap-1 lg:flex" aria-label="მთავარი ნავიგაცია">
             {NAV.map((item) => (
               <NavLink key={item.to} to={item.to} end={item.end} className={linkClass}>
                 {item.label}
@@ -74,7 +75,7 @@ export default function Layout() {
             ))}
           </nav>
 
-          <div className="hidden items-center gap-3 md:flex">
+          <div className="hidden items-center gap-3 lg:flex">
             <Link
               to="/search"
               className="inline-flex items-center gap-1.5 rounded-lg bg-accent-500 px-3 py-2 text-sm font-semibold text-brand-900 hover:bg-accent-400"
@@ -112,7 +113,7 @@ export default function Layout() {
           </div>
 
           <button
-            className="rounded-lg p-2 md:hidden"
+            className="rounded-lg p-2 lg:hidden"
             onClick={toggleMenu}
             aria-label={open ? 'მენიუს დახურვა' : 'მენიუს გახსნა'}
             aria-expanded={open}
@@ -122,7 +123,7 @@ export default function Layout() {
         </div>
 
         {open && (
-          <div className="border-t border-line bg-white px-4 py-3 md:hidden">
+          <div className="border-t border-line bg-white px-4 py-3 lg:hidden">
             <nav className="flex flex-col gap-1" aria-label="მობილური ნავიგაცია">
               {NAV.map((item) => (
                 <NavLink key={item.to} to={item.to} end={item.end} className={linkClass}>
@@ -164,7 +165,7 @@ export default function Layout() {
 
       <footer className="border-t border-line bg-white">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>Logistics Platform · Skillwill React ფინალური პროექტი · მონაცემები: MongoDB Atlas</p>
+          <p>ლოჯისტიკური პლატფორმა · სქილვილის ფინალური პროექტი · მონაცემები ინახება ღრუბლოვან ბაზაში</p>
           <button onClick={handleReset} className="inline-flex items-center gap-1 self-start hover:text-brand-700 sm:self-auto">
             <RotateCcw className="size-3.5" aria-hidden /> დემო მონაცემების განულება
           </button>

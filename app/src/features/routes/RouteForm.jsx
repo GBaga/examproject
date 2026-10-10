@@ -77,7 +77,7 @@ export default function RouteForm({ role, initialValues, drivers = [], minCapaci
             label="მძღოლი"
             htmlFor="rf-driver"
             error={errors.driverId?.message}
-            hint={drivers.length === 0 ? 'ჯერ დაამატეთ მძღოლი Dashboard-ზე' : undefined}
+            hint={drivers.length === 0 ? 'ჯერ დაამატეთ მძღოლი სამართავ პანელზე' : undefined}
             className="sm:col-span-2"
           >
             <Select id="rf-driver" invalid={!!errors.driverId} {...register('driverId')}>

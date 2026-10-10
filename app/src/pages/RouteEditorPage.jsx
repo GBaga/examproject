@@ -23,9 +23,9 @@ export default function RouteEditorPage() {
   }, [id, user.id])
 
   if (loading) return <Spinner />
-  if (error) return <EmptyState title="მარშრუტი ვერ მოიძებნა" text={error} action={<Button to="/dashboard">Dashboard</Button>} />
+  if (error) return <EmptyState title="მარშრუტი ვერ მოიძებნა" text={error} action={<Button to="/dashboard">სამართავი პანელი</Button>} />
   if (isEdit && data.route.ownerId !== user.id) {
-    return <EmptyState title="წვდომა შეზღუდულია" text="ეს მარშრუტი თქვენი არ არის." action={<Button to="/dashboard">Dashboard</Button>} />
+    return <EmptyState title="წვდომა შეზღუდულია" text="ეს მარშრუტი თქვენი არ არის." action={<Button to="/dashboard">სამართავი პანელი</Button>} />
   }
 
   const { route, drivers } = data
@@ -40,7 +40,7 @@ export default function RouteEditorPage() {
   return (
     <div className="mx-auto max-w-3xl">
       <Button to="/dashboard" variant="ghost" className="mb-4 -ml-3">
-        <ArrowLeft className="size-4" aria-hidden /> Dashboard
+        <ArrowLeft className="size-4" aria-hidden /> სამართავი პანელი
       </Button>
       <PageHeader
         title={isEdit ? 'მარშრუტის რედაქტირება' : 'ახალი მარშრუტი'}
