@@ -6,7 +6,7 @@ Skillwill-ის Git მოდულის პრაქტიკული და
 | | ბმული |
 |---|---|
 | 🌐 აპლიკაცია (Vercel) | https://examproject-taupe.vercel.app |
-| 📋 Jira დაფა (`LOG`) | https://gbagaskillwill.atlassian.net/jira/software/projects/LOG/boards |
+| 📋 Jira დაფა (`LOG`) | https://gbagaskillwill.atlassian.net/jira/software/projects/LOG/boards/2 |
 | 📚 დოკუმენტაცია | [`docs/`](./docs/README.md) |
 | ⚛️ React აპის README | [`app/README.md`](./app/README.md) |
 
