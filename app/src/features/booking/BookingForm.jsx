@@ -65,7 +65,7 @@ export default function BookingForm({ route, onBooked }) {
   }
 
   if (isOwner) {
-    return <p className="rounded-xl bg-brand-50 p-4 text-sm text-brand-900">ეს თქვენი მარშრუტია — მისი რედაქტირება შეგიძლიათ Dashboard-იდან.</p>
+    return <p className="rounded-xl bg-brand-50 p-4 text-sm text-brand-900">ეს თქვენი მარშრუტია — მისი რედაქტირება შეგიძლიათ სამართავი პანელიდან.</p>
   }
 
   return (

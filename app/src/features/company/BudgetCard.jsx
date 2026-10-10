@@ -36,7 +36,7 @@ export default function BudgetCard({ company }) {
       {pct >= 90 && (
         <p className="mt-3 flex items-start gap-2 rounded-lg bg-red-50 p-3 text-xs text-red-800">
           <AlertTriangle className="size-4 shrink-0" aria-hidden />
-          ბიუჯეტი თითქმის ამოწურულია. ლიმიტის გაზრდა შეგიძლიათ Settings-ში.
+          ბიუჯეტი თითქმის ამოწურულია. ლიმიტის გაზრდა შეგიძლიათ პარამეტრებში.
         </p>
       )}
       <p className="mt-3 text-xs text-muted">ხარჯი ითვლება კომპანიის ანგარიშიდან გაკეთებული ჯავშნებით. ლიმიტის გადაჭარბებისას ჯავშანი იბლოკება.</p>

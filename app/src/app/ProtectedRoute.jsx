@@ -28,7 +28,7 @@ export function ProtectedRoute({ permission, children }) {
           icon={ShieldAlert}
           title="წვდომა შეზღუდულია"
           text="ამ გვერდის ნახვის უფლება თქვენს როლს არ აქვს."
-          action={<Button to="/dashboard">Dashboard-ზე დაბრუნება</Button>}
+          action={<Button to="/dashboard">სამართავ პანელზე დაბრუნება</Button>}
         />
       </div>
     )

@@ -28,7 +28,7 @@ export default function AboutPage() {
     <div className="flex flex-col gap-8">
       <PageHeader
         title="პროექტის შესახებ"
-        subtitle="B2B / B2C ლოჯისტიკური და ტრანსპორტირების პლატფორმა — Skillwill-ის React ფინალური პროექტი."
+        subtitle="ლოჯისტიკური და ტრანსპორტირების პლატფორმა კომპანიებისა და ფიზიკური პირებისთვის — სქილვილის ფინალური პროექტი."
       />
 
       <section className="grid gap-4 md:grid-cols-3">
@@ -84,7 +84,7 @@ export default function AboutPage() {
           </table>
         </div>
         <p className="mt-4 text-xs text-muted">
-          მონაცემები ინახება ბრაუზერის localStorage-ში (mock backend). გადახდები არის იმიტაცია.
+          მონაცემები ინახება ღრუბლოვან მონაცემთა ბაზაში. ბალანსის შევსება და გადახდები იმიტაციაა.
         </p>
       </Card>
     </div>

@@ -8,10 +8,10 @@ import { ROLE_LABELS, useAuth } from '../store/authStore'
 
 // ნავიგაცია ემთხვევა Git მოდულის კონფლიქტის გადაწყვეტას: Home / About + Dashboard / Settings
 const NAV = [
-  { to: '/', label: 'Home', end: true },
-  { to: '/about', label: 'About' },
-  { to: '/dashboard', label: 'Dashboard' },
-  { to: '/settings', label: 'Settings' },
+  { to: '/', label: 'მთავარი', end: true },
+  { to: '/about', label: 'პროექტის შესახებ' },
+  { to: '/dashboard', label: 'სამართავი პანელი' },
+  { to: '/settings', label: 'პარამეტრები' },
 ]
 
 function Logo() {
@@ -19,8 +19,8 @@ function Logo() {
     <Link to="/" className="flex items-center gap-2 font-bold text-brand-900">
       <img src="/favicon.svg" alt="" className="size-8" />
       <span className="leading-tight">
-        Logistics
-        <span className="block text-xs font-medium text-muted">Platform</span>
+        ლოჯისტიკა
+        <span className="block text-xs font-medium text-muted">პლატფორმა</span>
       </span>
     </Link>
   )
@@ -164,7 +164,7 @@ export default function Layout() {
 
       <footer className="border-t border-line bg-white">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>Logistics Platform · Skillwill React ფინალური პროექტი · მონაცემები: MongoDB Atlas</p>
+          <p>ლოჯისტიკური პლატფორმა · სქილვილის ფინალური პროექტი · მონაცემები ინახება ღრუბლოვან ბაზაში</p>
           <button onClick={handleReset} className="inline-flex items-center gap-1 self-start hover:text-brand-700 sm:self-auto">
             <RotateCcw className="size-3.5" aria-hidden /> დემო მონაცემების განულება
           </button>
