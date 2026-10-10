@@ -1,44 +1,57 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import * as authApi from '../lib/api/auth'
+import { setToken } from '../lib/api/client'
 
 /**
  * ავტორიზაციის გლობალური state.
- * სესიაში ინახება მხოლოდ userId; მომხმარებლის მონაცემები (ბალანსი და ა.შ.)
- * ყოველთვის იკითხება mock DB-დან `refresh()`-ით, რომ ეკრანზე აქტუალური იყოს.
+ * სესიაში ინახება userId და სერვერის მიერ ხელმოწერილი ტოკენი; მომხმარებლის მონაცემები
+ * (ბალანსი და ა.შ.) ყოველთვის იკითხება backend-იდან `refresh()`-ით, რომ ეკრანზე აქტუალური იყოს.
  */
 export const useAuth = create(
   persist(
     (set, get) => ({
       userId: null,
+      token: null,
       user: null,
 
       login: async (email, password) => {
-        const user = await authApi.login(email, password)
-        set({ userId: user.id, user })
+        const { user, token } = await authApi.login(email, password)
+        setToken(token)
+        set({ userId: user.id, token, user })
         return user
       },
 
       register: async (data) => {
-        const user = await authApi.register(data)
-        set({ userId: user.id, user })
+        const { user, token } = await authApi.register(data)
+        setToken(token)
+        set({ userId: user.id, token, user })
         return user
       },
 
-      logout: () => set({ userId: null, user: null }),
+      logout: () => {
+        setToken(null)
+        set({ userId: null, token: null, user: null })
+      },
 
-      refresh: () => {
-        const { userId } = get()
-        if (!userId) return
-        const user = authApi.getUserSync(userId)
-        set(user ? { user } : { userId: null, user: null })
+      refresh: async () => {
+        const { token } = get()
+        if (!token) return
+        setToken(token)
+        try {
+          const user = await authApi.me()
+          if (get().token === token) set({ user, userId: user.id })
+        } catch (e) {
+          // ვადაგასული ან არასწორი ტოკენი → გასვლა; ქსელის შეცდომისას სესია რჩება
+          if (e.code === 'UNAUTHORIZED' && get().token === token) get().logout()
+        }
       },
 
       setUser: (user) => set({ user }),
     }),
     {
       name: 'lp_session',
-      partialize: (state) => ({ userId: state.userId }),
+      partialize: (state) => ({ userId: state.userId, token: state.token }),
       onRehydrateStorage: () => (state) => state?.refresh(),
     },
   ),

@@ -1,6 +1,6 @@
 import { ShieldAlert } from 'lucide-react'
 import { Navigate, useLocation } from 'react-router-dom'
-import { Button, EmptyState } from '../components/ui'
+import { Button, EmptyState, Spinner } from '../components/ui'
 import { can, useAuth } from '../store/authStore'
 
 /**
@@ -10,7 +10,11 @@ import { can, useAuth } from '../store/authStore'
  */
 export function ProtectedRoute({ permission, children }) {
   const user = useAuth((s) => s.user)
+  const token = useAuth((s) => s.token)
   const location = useLocation()
+
+  // სესია აღდგება სერვერიდან — ტოკენი არის, მომხმარებელი ჯერ იტვირთება
+  if (!user && token) return <Spinner label="სესია აღდგება…" />
 
   if (!user) {
     const next = encodeURIComponent(location.pathname + location.search)

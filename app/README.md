@@ -55,15 +55,24 @@ src/
     └── cities.js   ქალაქები კოორდინატებით
 ```
 
+## Backend — MongoDB Atlas
+
+- **API:** Vercel Serverless Function `api/rpc.js` (`POST /api/rpc { action, args }`), ლოგიკა — `server/handlers.js`
+- **ბაზა:** MongoDB Atlas, კოლექციები `users`, `companies`, `drivers`, `routes`, `bookings`, `transactions`; ცარიელ ბაზას პირველივე მოთხოვნაზე ავსებს დემო მონაცემებით
+- **უსაფრთხოება:** პაროლები — scrypt ჰეში; სესია — HMAC-ით ხელმოწერილი ტოკენი; მომხმარებელს სერვერი ტოკენიდან ადგენს
+- **Overbooking:** ატომური პირობითი განახლება (`seatsLeft >= n` → `$inc`), ჩავარდნისას ცვლილებები უკან ბრუნდება
+- **გარემოს ცვლადები** (`.env.example`): `MONGODB_URI`, `AUTH_SECRET`, სურვილისამებრ `MONGODB_DB`
+- ლოკალურად: `app/.env`-ში ჩაწერე ცვლადები და `npm run dev` — `/api/rpc` იმავე handler-ით მუშაობს
+
 ## შეზღუდვები (MVP)
 
-- Backend არის mock: მონაცემები ინახება ბრაუზერის localStorage-ში და სხვა ბრაუზერთან არ ზიარდება.
 - გადახდა არის იმიტაცია; ბარათის მონაცემები არ მოითხოვება.
 - რუკაზე მარშრუტი ნაჩვენებია სწორი ხაზით (საგზაო მარშრუტიზაციის API არ გამოიყენება).
 
 ## Deploy (Vercel)
 
 - **Live:** https://examproject-taupe.vercel.app
+- **Environment Variables:** `MONGODB_URI`, `AUTH_SECRET`
 - **Root Directory:** `app`
 - **Framework Preset:** Vite
 - `vercel.json` უზრუნველყოფს SPA routing-ს (გვერდის განახლებისას 404 არ ჩნდება).

@@ -2,7 +2,7 @@ import { LogIn, LogOut, Menu, RotateCcw, Search, Wallet, X } from 'lucide-react'
 import { Suspense, useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Badge, Spinner } from '../components/ui'
-import { resetDb } from '../lib/api/db'
+import { resetDb } from '../lib/api/client'
 import { formatMoney } from '../lib/format'
 import { ROLE_LABELS, useAuth } from '../store/authStore'
 
@@ -51,9 +51,9 @@ export default function Layout() {
     navigate('/')
   }
 
-  const handleReset = () => {
+  const handleReset = async () => {
     if (window.confirm('დემო მონაცემები დაბრუნდეს საწყის მდგომარეობაში? ყველა ცვლილება წაიშლება.')) {
-      resetDb()
+      await resetDb().catch(() => {})
       logout()
       navigate('/')
       window.location.reload()

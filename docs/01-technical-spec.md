@@ -110,7 +110,7 @@ exam-project/
         └── lib/        ← mock API, RBAC helpers, utils
 ```
 
-**Backend:** mock სერვისების ფენა localStorage-ზე. ყველა მოთხოვნა გადის `lib/api/*` ფუნქციებზე (async, დაყოვნების იმიტაციით), რათა მომავალში რეალურ API-ზე გადასვლა მხოლოდ ამ ფენის შეცვლას მოითხოვდეს.
+**Backend:** MongoDB Atlas + Vercel Serverless Function (`app/api/rpc.js`). კლიენტი ყველა მოთხოვნას აგზავნის `lib/api/*` ფენით (`rpc(action, args)`), ამიტომ backend-ზე გადასვლისას კომპონენტები არ შეცვლილა. (v1-ში იგივე ფენა localStorage mock-ზე მუშაობდა.)
 
 ### მონაცემთა მოდელი
 
