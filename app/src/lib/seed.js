@@ -1,4 +1,4 @@
-import { todayISO } from './format'
+import { todayISO } from './format.js'
 
 // დემო მონაცემები. თარიღები ითვლება „დღეიდან“, რომ მარშრუტები ყოველთვის მომავალში იყოს.
 export function createSeed() {
