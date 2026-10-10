@@ -40,7 +40,7 @@ export default function RouteEditorPage() {
   return (
     <div className="mx-auto max-w-3xl">
       <Button to="/dashboard" variant="ghost" className="mb-4 -ml-3">
-        <ArrowLeft className="size-4" aria-hidden /> Dashboard
+        <ArrowLeft className="size-4" aria-hidden /> სამართავი პანელი
       </Button>
       <PageHeader
         title={isEdit ? 'მარშრუტის რედაქტირება' : 'ახალი მარშრუტი'}
