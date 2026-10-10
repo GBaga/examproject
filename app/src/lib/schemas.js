@@ -89,7 +89,7 @@ export const bookingSchema = (maxSeats) =>
     seats: z.coerce
       .number()
       .int()
-      .min(1, 'მინიმუმ 1 ადგილი')
+      .min(1, 'აირჩიეთ მინიმუმ 1 ადგილი სქემაზე')
       .max(Math.max(maxSeats, 1), `მაქსიმუმ ${maxSeats} ადგილი`),
   })
 

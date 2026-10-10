@@ -14,7 +14,7 @@ export default function RecentBookings({ bookings }) {
           <li key={b.id} className="flex items-center justify-between gap-3 px-5 py-3 text-sm">
             <div className="min-w-0">
               <p className="truncate font-semibold">
-                {b.passengerName} · {b.seats} ადგილი
+                {b.passengerName} · {b.seatNumbers?.length ? `№ ${b.seatNumbers.join(', ')}` : `${b.seats} ადგილი`}
               </p>
               <p className="flex items-center gap-1 text-xs text-muted">
                 {cityName(b.route?.from)} <ArrowRight className="size-3" aria-hidden /> {cityName(b.route?.to)} · {formatDateTime(b.createdAt)}

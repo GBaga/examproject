@@ -61,6 +61,7 @@ export function createSeed() {
     time,
     capacity,
     seatsLeft,
+    seatsTaken: Array.from({ length: capacity - seatsLeft }, (_, i) => i + 1),
     price,
     createdAt: now,
   })

@@ -50,7 +50,7 @@ export default function BookingConfirmPage() {
         {route && <Row label="გამგზავრება" value={`${formatDate(route.date)}, ${route.time}`} />}
         <Row label="მგზავრი" value={booking.passengerName} />
         <Row label="ტელეფონი" value={booking.phone} />
-        <Row label="ადგილები" value={booking.seats} />
+        <Row label="ადგილები" value={booking.seatNumbers?.length ? `№ ${booking.seatNumbers.join(', ')}` : booking.seats} />
         <Row label="ჯამი" value={formatMoney(booking.total)} />
         <Row label="გადახდა" value={booking.payment === 'balance' ? 'ბალანსიდან' : 'ადგილზე, მძღოლთან'} />
         <Row label="შექმნილია" value={formatDateTime(booking.createdAt)} />
