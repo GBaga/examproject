@@ -26,6 +26,7 @@ Skillwill-ის Git მოდულის პრაქტიკული და
 
 - **დაგეგმვა (სწავლის შედეგი 1):** ტექნიკური დავალება, როლები, სტეკი, რისკების ანალიზი და Timeline / Gantt — [`docs/`](./docs/README.md); ამოცანები — Jira `LOG`
 - **კოდი:** [`app/`](./app) — Vite, React, Tailwind CSS, React Router, Zustand, React Hook Form + Zod, react-leaflet
+- **Backend და ბაზა:** Vercel Serverless Function (`app/api/rpc.js`) + **MongoDB Atlas**
 - **სამუშაო პროცესი:** თითო ფუნქცია ცალკე ბრანჩში, Jira-ს გასაღებით (`feature/LOG-<n>-…`), merge — Pull Request-ით (#2–#13)
 
 ### დემო ანგარიშები

@@ -96,6 +96,8 @@ exam-project/
 ├── README.md
 ├── docs/               ← ეს დოკუმენტაცია
 └── app/                ← React (Vite) აპლიკაცია
+    ├── api/rpc.js      ← Vercel Serverless Function (backend-ის შესასვლელი)
+    ├── server/         ← ბიზნეს-ლოგიკა, MongoDB კავშირი, უსაფრთხოება
     └── src/
         ├── app/        ← router, providers, layout
         ├── features/
@@ -107,26 +109,31 @@ exam-project/
         │   └── map/
         ├── components/ ← საერთო UI კომპონენტები
         ├── pages/
-        └── lib/        ← mock API, RBAC helpers, utils
+        └── lib/        ← API კლიენტი (`lib/api/*`), Zod სქემები, utils
 ```
 
-**Backend:** MongoDB Atlas + Vercel Serverless Function (`app/api/rpc.js`). კლიენტი ყველა მოთხოვნას აგზავნის `lib/api/*` ფენით (`rpc(action, args)`), ამიტომ backend-ზე გადასვლისას კომპონენტები არ შეცვლილა. (v1-ში იგივე ფენა localStorage mock-ზე მუშაობდა.)
+**Backend:** MongoDB Atlas + Vercel Serverless Function (`app/api/rpc.js`).
+- კლიენტი ყველა მოთხოვნას აგზავნის `lib/api/*` ფენით (`POST /api/rpc { action, args }`); კომპონენტები ბაზას პირდაპირ არ იცნობენ.
+- სერვერი (`app/server/handlers.js`) ამოწმებს უფლებებს (RBAC) და ასრულებს ბიზნეს-ლოგიკას; მომხმარებელს ადგენს HMAC-ით ხელმოწერილი ტოკენიდან და არა კლიენტის მონაცემებიდან.
+- პაროლები ინახება scrypt ჰეშით.
+- Overbooking-ის დაცვა: ადგილი მცირდება ატომური პირობითი განახლებით (`seatsLeft >= n` → `$inc`); შემდეგი ნაბიჯის ჩავარდნისას ცვლილებები უკან ბრუნდება.
+- ცარიელ ბაზას პირველივე მოთხოვნაზე ავსებს დემო მონაცემებით (`src/lib/seed.js`).
 
-### მონაცემთა მოდელი
+### მონაცემთა მოდელი (MongoDB კოლექციები)
 
 | ერთეული | ველები |
 |---|---|
-| `User` | id, name, email, password (mock), role, balance, companyId? |
-| `Company` | id, name, taxId, contact, budgetLimit, spent |
-| `Driver` | id, companyId, name, phone |
-| `Route` | id, ownerId, driverId?, from, to, date, time, capacity, seatsLeft, price |
-| `Booking` | id, routeId, passengerName, phone, seats, total, code, createdAt |
-| `Transaction` | id, userId, type (`topup` / `earning` / `spend`), amount, createdAt |
+| `users` | id, name, email (unique), passwordHash, role, balance, companyId? |
+| `companies` | id, name, taxId, contact, budgetLimit, spent |
+| `drivers` | id, companyId, name, phone |
+| `routes` | id, ownerId, driverId?, from, to, date, time, capacity, seatsLeft, price |
+| `bookings` | id, routeId, passengerName, phone, seats, total, payment, code (unique), createdAt |
+| `transactions` | id, userId, type (`topup` / `earning` / `spend`), amount, note, createdAt |
 
 ## 7. MVP-ის საზღვრები
 
-**შედის:** ყველა ზემოთ ჩამოთვლილი FR, mock backend, deploy.
-**არ შედის:** რეალური გადახდები, რეალური backend/ბაზა, email/SMS შეტყობინებები, ადმინ-პანელი.
+**შედის:** ყველა ზემოთ ჩამოთვლილი FR, backend (Vercel Serverless Function), MongoDB Atlas ბაზა, ავტორიზაცია ტოკენით, deploy.
+**არ შედის:** რეალური გადახდები (ბალანსის შევსება — იმიტაცია), email/SMS შეტყობინებები, ადმინ-პანელი.
 
 ## 8. მიღების კრიტერიუმები (Definition of Done)
 

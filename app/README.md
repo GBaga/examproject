@@ -42,6 +42,8 @@ npm run preview    # build-ის ლოკალური ნახვა
 ## სტრუქტურა
 
 ```
+api/rpc.js          Vercel Serverless Function (backend-ის შესასვლელი)
+server/             handlers (ბიზნეს-ლოგიკა), mongo (კავშირი, seed), security (ჰეში, ტოკენი)
 src/
 ├── app/            Layout, router, ProtectedRoute (RBAC guard)
 ├── pages/          გვერდები (Home, About, Search, RouteDetails, Dashboard, Settings, ...)
@@ -49,7 +51,7 @@ src/
 ├── components/     საერთო UI (Button, Field, Card, EmptyState, ...)
 ├── store/          Zustand — სესია და უფლებები
 └── lib/
-    ├── api/        mock backend (localStorage): auth, routes, bookings, transactions, company
+    ├── api/        API კლიენტი: auth, routes, bookings, transactions, company → POST /api/rpc
     ├── schemas.js  Zod ვალიდაცია
     ├── seed.js     დემო მონაცემები
     └── cities.js   ქალაქები კოორდინატებით
