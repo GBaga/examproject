@@ -1,11 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Minus, Plus, Wallet } from 'lucide-react'
+import { Wallet } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { Button, ErrorBox, Field, Input } from '../../components/ui'
 import { createBooking } from '../../lib/api/bookings'
 import { formatMoney } from '../../lib/format'
+import SeatPicker from './SeatPicker'
 import { bookingSchema } from '../../lib/schemas'
 import { useAuth } from '../../store/authStore'
 
@@ -14,6 +15,7 @@ export default function BookingForm({ route, onBooked }) {
   const refresh = useAuth((s) => s.refresh)
   const navigate = useNavigate()
   const [serverError, setServerError] = useState(null)
+  const [selected, setSelected] = useState([])
 
   const isOwner = user?.id === route.ownerId
   const soldOut = route.seatsLeft === 0
@@ -30,26 +32,31 @@ export default function BookingForm({ route, onBooked }) {
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: (values, context, options) => zodResolver(bookingSchema(seatsLeftRef.current))(values, context, options),
-    defaultValues: { passengerName: user?.name ?? '', phone: '', seats: 1 },
+    defaultValues: { passengerName: user?.name ?? '', phone: '', seats: 0 },
   })
 
-  const seats = Number(watch('seats')) || 1
-  const total = seats * route.price
-  const step = (delta) => {
-    const next = Math.min(Math.max(seats + delta, 1), route.seatsLeft)
-    setValue('seats', next, { shouldValidate: true })
+  watch('seats')
+  const total = selected.length * route.price
+  const toggleSeat = (n) => {
+    const next = selected.includes(n) ? selected.filter((x) => x !== n) : [...selected, n].sort((a, b) => a - b)
+    setSelected(next)
+    setValue('seats', next.length, { shouldValidate: true })
   }
 
   const onSubmit = async (values) => {
     setServerError(null)
     try {
-      const booking = await createBooking({ routeId: route.id, ...values, payerId: user?.id ?? null })
+      const booking = await createBooking({ routeId: route.id, ...values, seatNumbers: selected, payerId: user?.id ?? null })
       refresh()
       onBooked?.()
       navigate(`/booking/${booking.code}`)
     } catch (err) {
       setServerError(err.message)
-      onBooked?.() // ადგილების რაოდენობა შეიძლება შეიცვალა — ვანახლებთ
+      if (err.code === 'SEAT_TAKEN') {
+        setSelected([])
+        setValue('seats', 0)
+      }
+      onBooked?.() // ადგილები შეიძლება შეიცვალა — ვანახლებთ
     }
   }
 
@@ -69,16 +76,14 @@ export default function BookingForm({ route, onBooked }) {
       <Field label="მობილური" htmlFor="b-phone" error={errors.phone?.message} hint="მაგ. 599123456">
         <Input id="b-phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="5XXXXXXXX" invalid={!!errors.phone} {...register('phone')} />
       </Field>
-      <Field label="ადგილების რაოდენობა" htmlFor="b-seats" error={errors.seats?.message} hint={`თავისუფალია ${route.seatsLeft}`}>
-        <div className="flex items-center gap-2">
-          <button type="button" onClick={() => step(-1)} className="rounded-lg border border-line p-2.5 hover:border-brand-500" aria-label="ადგილის მოკლება">
-            <Minus className="size-4" />
-          </button>
-          <Input id="b-seats" type="number" min={1} max={route.seatsLeft} className="w-20 text-center" invalid={!!errors.seats} {...register('seats')} />
-          <button type="button" onClick={() => step(1)} className="rounded-lg border border-line p-2.5 hover:border-brand-500" aria-label="ადგილის დამატება">
-            <Plus className="size-4" />
-          </button>
-        </div>
+      <Field
+        label="აირჩიეთ ადგილები"
+        htmlFor="b-seats"
+        error={errors.seats?.message}
+        hint={selected.length ? `არჩეულია: № ${selected.join(', ')}` : `თავისუფალია ${route.seatsLeft} ადგილი`}
+      >
+        <input id="b-seats" type="hidden" {...register('seats')} />
+        <SeatPicker capacity={route.capacity} taken={route.seatsTaken} selected={selected} max={route.seatsLeft} onToggle={toggleSeat} />
       </Field>
 
       <div className="flex items-center justify-between rounded-xl bg-brand-50 px-4 py-3">

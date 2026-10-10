@@ -36,6 +36,12 @@ export async function getDb() {
         await db.collection('bookings').createIndex({ code: 1 }, { unique: true })
       }
       if ((await db.collection('users').countDocuments({})) === 0) await seed(db)
+      // მიგრაცია: ძველ მარშრუტებს ადგილების სქემა (seatsTaken) ჯერ არ აქვთ
+      const legacy = await db.collection('routes').find({ seatsTaken: { $exists: false } }).toArray()
+      for (const r of legacy) {
+        const seatsTaken = Array.from({ length: r.capacity - r.seatsLeft }, (_, i) => i + 1)
+        await db.collection('routes').updateOne({ id: r.id, seatsTaken: { $exists: false } }, { $set: { seatsTaken } })
+      }
     })().catch((e) => {
       ready = null
       throw e

@@ -164,7 +164,7 @@ export default function Layout() {
 
       <footer className="border-t border-line bg-white">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>Logistics Platform · Skillwill React ფინალური პროექტი · დემო ვერსია (mock backend)</p>
+          <p>Logistics Platform · Skillwill React ფინალური პროექტი · მონაცემები: MongoDB Atlas</p>
           <button onClick={handleReset} className="inline-flex items-center gap-1 self-start hover:text-brand-700 sm:self-auto">
             <RotateCcw className="size-3.5" aria-hidden /> დემო მონაცემების განულება
           </button>
