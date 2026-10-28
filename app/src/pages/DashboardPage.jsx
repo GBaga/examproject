@@ -14,7 +14,7 @@ import { useAsync, useDocumentTitle } from '../lib/hooks'
 import { ROLE_LABELS, useAuth } from '../store/authStore'
 
 export default function DashboardPage() {
-  useDocumentTitle('Dashboard')
+  useDocumentTitle('სამართავი პანელი')
   const user = useAuth((s) => s.user)
   const location = useLocation()
   const flash = location.state?.flash

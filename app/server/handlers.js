@@ -166,7 +166,7 @@ export const actions = {
   'routes.create': async (data, ctx) => {
     const user = await requireUser(ctx, ['provider', 'company'])
     const fields = routeFields(user, data)
-    const route = { id: uid('r'), ownerId: user.id, ...fields, seatsLeft: fields.capacity, createdAt: new Date().toISOString() }
+    const route = { id: uid('r'), ownerId: user.id, ...fields, seatsLeft: fields.capacity, seatsTaken: [], createdAt: new Date().toISOString() }
     await (await col('routes')).insertOne({ ...route })
     return (await withOwners([route]))[0]
   },
@@ -178,16 +178,15 @@ export const actions = {
     if (!route) throw new ApiError('მარშრუტი ვერ მოიძებნა', 'NOT_FOUND', 404)
     if (route.ownerId !== user.id) throw new ApiError('ეს მარშრუტი თქვენი არ არის', 'FORBIDDEN', 403)
     const fields = routeFields(user, data)
-    const booked = route.capacity - route.seatsLeft
-    if (fields.capacity < booked) {
-      throw new ApiError(`ტევადობა ვერ იქნება დაჯავშნილ ადგილებზე (${booked}) ნაკლები`, 'CAPACITY')
+    const taken = route.seatsTaken ?? []
+    const highest = taken.length ? Math.max(...taken) : 0
+    if (fields.capacity < highest) {
+      throw new ApiError(`ტევადობა ვერ იქნება დაკავებულ ადგილის ნომერზე (№${highest}) ნაკლები`, 'CAPACITY')
     }
-    // seatsLeft-ს ვითვლით ატომურად მიმდინარე მნიშვნელობიდან, რომ პარალელური ჯავშანი არ დაიკარგოს
-    const delta = fields.capacity - route.capacity
-    const { capacity, ...rest } = fields
+    // განახლება მხოლოდ მაშინ, თუ ამასობაში ახალი ჯავშანი არ გაკეთებულა (seatsLeft უცვლელია)
     const res = await routes.updateOne(
-      { id, capacity: route.capacity, seatsLeft: { $gte: -delta } },
-      { $set: { ...rest, capacity }, $inc: { seatsLeft: delta } },
+      { id, capacity: route.capacity, seatsLeft: route.seatsLeft },
+      { $set: { ...fields, seatsLeft: fields.capacity - taken.length } },
     )
     if (!res.matchedCount) throw new ApiError('მარშრუტი ამასობაში შეიცვალა — სცადეთ თავიდან', 'CONFLICT', 409)
     return (await withOwners([await routes.findOne({ id }, NO_ID)]))[0]
@@ -210,9 +209,10 @@ export const actions = {
    * ადგილი მცირდება მხოლოდ მაშინ, თუ seatsLeft >= მოთხოვნილი რაოდენობა.
    * შემდეგი ნაბიჯის ჩავარდნისას ცვლილებები უკან ბრუნდება (კომპენსაცია).
    */
-  'bookings.create': async ({ routeId, passengerName, phone, seats, payWithBalance }, ctx) => {
-    const count = Number(seats)
-    if (!Number.isInteger(count) || count < 1) throw new ApiError('აირჩიეთ ადგილების რაოდენობა', 'SEATS')
+  'bookings.create': async ({ routeId, passengerName, phone, seatNumbers, payWithBalance }, ctx) => {
+    const nums = Array.isArray(seatNumbers) ? [...new Set(seatNumbers.map(Number))].sort((a, b) => a - b) : []
+    const count = nums.length
+    if (!count || nums.some((n) => !Number.isInteger(n) || n < 1)) throw new ApiError('აირჩიეთ ადგილები სქემაზე', 'SEATS')
     if (!passengerName?.trim() || !phone?.trim()) throw new ApiError('შეავსეთ სახელი და ტელეფონი', 'FIELDS')
 
     const [routes, users, companies, txs, bookings] = await Promise.all(
@@ -220,6 +220,7 @@ export const actions = {
     )
     const route = await routes.findOne({ id: routeId }, NO_ID)
     if (!route) throw new ApiError('მარშრუტი ვერ მოიძებნა', 'NOT_FOUND', 404)
+    if (nums.some((n) => n > route.capacity)) throw new ApiError('ასეთი ადგილი ამ მარშრუტზე არ არსებობს', 'SEATS')
 
     const payer = payWithBalance && ctx.userId ? await requireUser(ctx) : null
     if (payer && payer.id === route.ownerId) throw new ApiError('საკუთარ მარშრუტზე ჯავშანი შეუძლებელია', 'OWN_ROUTE')
@@ -230,13 +231,18 @@ export const actions = {
     const undo = []
 
     try {
-      const seatRes = await routes.updateOne({ id: routeId, seatsLeft: { $gte: count } }, { $inc: { seatsLeft: -count } })
+      // ატომური დაჯავშნა: ჩაიწერება მხოლოდ მაშინ, თუ არცერთი არჩეული ადგილი არ არის დაკავებული
+      const seatRes = await routes.updateOne(
+        { id: routeId, seatsLeft: { $gte: count }, seatsTaken: { $nin: nums } },
+        { $push: { seatsTaken: { $each: nums } }, $inc: { seatsLeft: -count } },
+      )
       if (!seatRes.modifiedCount) {
         const fresh = await routes.findOne({ id: routeId }, NO_ID)
         if (!fresh?.seatsLeft) throw new ApiError('ამ მარშრუტზე თავისუფალი ადგილი აღარ არის', 'SOLD_OUT', 409)
-        throw new ApiError(`დარჩენილია მხოლოდ ${fresh.seatsLeft} თავისუფალი ადგილი`, 'NOT_ENOUGH_SEATS', 409)
+        const busy = nums.filter((n) => (fresh.seatsTaken ?? []).includes(n))
+        throw new ApiError(`ადგილი № ${busy.join(', ')} უკვე დაკავებულია — აირჩიეთ სხვა`, 'SEAT_TAKEN', 409)
       }
-      undo.push(() => routes.updateOne({ id: routeId }, { $inc: { seatsLeft: count } }))
+      undo.push(() => routes.updateOne({ id: routeId }, { $pull: { seatsTaken: { $in: nums } }, $inc: { seatsLeft: count } }))
 
       let payment = 'cash'
       if (payer) {
@@ -274,6 +280,7 @@ export const actions = {
         passengerName: passengerName.trim(),
         phone: phone.trim(),
         seats: count,
+        seatNumbers: nums,
         total,
         payment,
         payerId: payer?.id ?? null,

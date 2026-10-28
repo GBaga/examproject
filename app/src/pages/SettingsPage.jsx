@@ -69,7 +69,7 @@ function ProfileCard() {
 }
 
 export default function SettingsPage() {
-  useDocumentTitle('Settings')
+  useDocumentTitle('პარამეტრები')
   const user = useAuth((s) => s.user)
   const isCompany = user.role === 'company'
 
@@ -78,7 +78,7 @@ export default function SettingsPage() {
 
   return (
     <div>
-      <PageHeader title="Settings" subtitle="პროფილი, ბალანსი და ტრანზაქციები." />
+      <PageHeader title="პარამეტრები" subtitle="პროფილი, ბალანსი და ტრანზაქციები." />
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
         <div className="flex flex-col gap-6">
           <BalanceCard onTopUp={transactions.reload} />

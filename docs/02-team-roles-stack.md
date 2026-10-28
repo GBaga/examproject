@@ -26,7 +26,9 @@
 | ფორმები | **React Hook Form** | ეფექტური ფორმები ზედმეტი რენდერების გარეშე |
 | ვალიდაცია | **Zod** | სქემაზე დაფუძნებული ვალიდაცია |
 | რუკა | **react-leaflet + OpenStreetMap** | უფასო, API key არ სჭირდება |
-| Backend | **Mock API (localStorage)** | ტრანზაქციების იმიტაცია, სერვერის გარეშე |
+| Backend / API | **Vercel Serverless Functions (Node.js)** | სერვერის ცალკე მართვის გარეშე, იგივე deploy, რაც frontend-ს |
+| მონაცემთა ბაზა | **MongoDB Atlas** (Node.js driver) | მოქნილი დოკუმენტური მოდელი, უფასო M0 კლასტერი, ატომური განახლებები (overbooking-ის დაცვა) |
+| უსაფრთხოება | **scrypt + HMAC ტოკენი** (`node:crypto`) | პაროლების ჰეშირება და სესია დამატებითი ბიბლიოთეკების გარეშე |
 | ხატულები | **lucide-react** | მსუბუქი SVG ხატულები |
 
 ## 3. ინფრასტრუქტურა და ინსტრუმენტები
@@ -38,7 +40,8 @@
 | ვადები / Gantt | **Jira Timeline** + Mermaid Gantt ([04-timeline.md](./04-timeline.md)) |
 | დოკუმენტაცია | **Markdown `docs/`** რეპოში (GitHub-ზე რენდერდება) |
 | კოდის რედაქტორი | VS Code |
-| Deploy | **Vercel** (Root directory: `app`) |
+| მონაცემთა ბაზა | **MongoDB Atlas** — კლასტერი `logistics`, ბაზა `logistics` |
+| Deploy | **Vercel** (Root directory: `app`; env: `MONGODB_URI`, `AUTH_SECRET`) |
 | ბრაუზერის ტესტი | Chrome DevTools (responsive რეჟიმი) |
 
 ## 4. Jira დაფის სტრუქტურა
