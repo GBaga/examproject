@@ -27,7 +27,7 @@ export function Button({ variant = 'primary', loading = false, className, childr
     )
   }
   return (
-    <button className={classes} disabled={loading || props.disabled} {...props}>
+    <button className={classes} {...props} disabled={loading || props.disabled}>
       {loading && <Loader2 className="size-4 animate-spin" aria-hidden />}
       {children}
     </button>
