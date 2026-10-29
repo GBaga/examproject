@@ -1,7 +1,7 @@
 import { ArrowRight, Eye, Pencil, Route as RouteIcon, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Badge, Button, EmptyState, ErrorBox } from '../../components/ui'
+import { Badge, Button, ConfirmDialog, EmptyState, ErrorBox } from '../../components/ui'
 import { deleteRoute } from '../../lib/api/routes'
 import { cityName } from '../../lib/cities'
 import { formatDate, formatMoney, todayISO } from '../../lib/format'
@@ -11,10 +11,11 @@ export default function MyRoutesTable({ routes, onChanged }) {
   const user = useAuth((s) => s.user)
   const [error, setError] = useState(null)
   const [busyId, setBusyId] = useState(null)
+  const [toDelete, setToDelete] = useState(null)
   const today = todayISO()
 
-  const remove = async (route) => {
-    if (!window.confirm(`წაიშალოს მარშრუტი ${cityName(route.from)} → ${cityName(route.to)}?`)) return
+  const remove = async () => {
+    const route = toDelete
     setError(null)
     setBusyId(route.id)
     try {
@@ -24,6 +25,7 @@ export default function MyRoutesTable({ routes, onChanged }) {
       setError(err.message)
     } finally {
       setBusyId(null)
+      setToDelete(null)
     }
   }
 
@@ -41,6 +43,15 @@ export default function MyRoutesTable({ routes, onChanged }) {
   return (
     <div className="flex flex-col gap-3">
       <ErrorBox message={error} />
+      <ConfirmDialog
+        open={Boolean(toDelete)}
+        title="მარშრუტის წაშლა"
+        text={toDelete && `წაიშალოს მარშრუტი ${cityName(toDelete.from)} → ${cityName(toDelete.to)}? ამ მოქმედებას ვერ დააბრუნებთ.`}
+        confirmLabel="წაშლა"
+        danger
+        onConfirm={remove}
+        onCancel={() => setToDelete(null)}
+      />
       <div className="overflow-x-auto rounded-2xl border border-line bg-white">
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead className="border-b border-line bg-canvas text-xs text-muted uppercase">
@@ -94,7 +105,7 @@ export default function MyRoutesTable({ routes, onChanged }) {
                         <Pencil className="size-4" />
                       </Link>
                       <button
-                        onClick={() => remove(r)}
+                        onClick={() => setToDelete(r)}
                         disabled={busyId === r.id || booked > 0}
                         className="rounded-lg p-2 text-muted hover:bg-red-50 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-30"
                         title={booked > 0 ? 'ჯავშნიანი მარშრუტი ვერ წაიშლება' : 'წაშლა'}

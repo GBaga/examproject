@@ -1,10 +1,11 @@
 import { LogIn, LogOut, Menu, RotateCcw, Search, Wallet, X } from 'lucide-react'
 import { Suspense, useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { Badge, Spinner } from '../components/ui'
+import { Badge, ConfirmDialog, Spinner } from '../components/ui'
 import { resetDb } from '../lib/api/client'
 import { formatMoney } from '../lib/format'
 import { ROLE_LABELS, useAuth } from '../store/authStore'
+import ErrorBoundary from './ErrorBoundary'
 
 // ნავიგაცია ემთხვევა Git მოდულის კონფლიქტის გადაწყვეტას: Home / About + Dashboard / Settings (ქართულად)
 // ქართული სახელები გრძელია, ამიტომ სრული მენიუ ჩანს lg-დან, უფრო ვიწრო ეკრანზე — ჰამბურგერი
@@ -52,13 +53,12 @@ export default function Layout() {
     navigate('/')
   }
 
+  const [confirmReset, setConfirmReset] = useState(false)
   const handleReset = async () => {
-    if (window.confirm('დემო მონაცემები დაბრუნდეს საწყის მდგომარეობაში? ყველა ცვლილება წაიშლება.')) {
-      await resetDb().catch(() => {})
-      logout()
-      navigate('/')
-      window.location.reload()
-    }
+    await resetDb().catch(() => {})
+    logout()
+    navigate('/')
+    window.location.reload()
   }
 
   return (
@@ -158,19 +158,31 @@ export default function Layout() {
       </header>
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
-        <Suspense fallback={<Spinner />}>
-          <Outlet />
-        </Suspense>
+        <ErrorBoundary key={location.pathname}>
+          <Suspense fallback={<Spinner />}>
+            <Outlet />
+          </Suspense>
+        </ErrorBoundary>
       </main>
 
       <footer className="border-t border-line bg-white">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
           <p>ლოჯისტიკური პლატფორმა · სქილვილის ფინალური პროექტი · მონაცემები ინახება ღრუბლოვან ბაზაში</p>
-          <button onClick={handleReset} className="inline-flex items-center gap-1 self-start hover:text-brand-700 sm:self-auto">
+          <button onClick={() => setConfirmReset(true)} className="inline-flex items-center gap-1 self-start hover:text-brand-700 sm:self-auto">
             <RotateCcw className="size-3.5" aria-hidden /> დემო მონაცემების განულება
           </button>
         </div>
       </footer>
+
+      <ConfirmDialog
+        open={confirmReset}
+        title="დემო მონაცემების განულება"
+        text="დემო მონაცემები დაბრუნდეს საწყის მდგომარეობაში? ყველა ცვლილება წაიშლება."
+        confirmLabel="განულება"
+        danger
+        onConfirm={handleReset}
+        onCancel={() => setConfirmReset(false)}
+      />
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { AlertTriangle, Inbox, Loader2 } from 'lucide-react'
-import { forwardRef } from 'react'
+import { forwardRef, useEffect, useId, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 const cx = (...classes) => classes.filter(Boolean).join(' ')
@@ -129,6 +129,63 @@ export function ErrorBox({ message, onRetry }) {
         </button>
       )}
     </div>
+  )
+}
+
+/**
+ * დადასტურების მოდალი ნატიური <dialog>-ით: showModal() მას top layer-ში ხსნის, ამიტომ
+ * მშობლის z-index / overflow ვერ ფარავს. Escape და ფონზე დაჭერა ხურავს, ფოკუსი შიგნით რჩება.
+ */
+export function ConfirmDialog({ open, title, text, confirmLabel = 'დადასტურება', danger = false, onConfirm, onCancel }) {
+  const ref = useRef(null)
+  const titleId = useId()
+  const [busy, setBusy] = useState(false)
+
+  useEffect(() => {
+    const dialog = ref.current
+    if (open && !dialog.open) dialog.showModal()
+    if (!open && dialog.open) dialog.close()
+  }, [open])
+
+  const cancel = () => {
+    if (!busy) onCancel()
+  }
+
+  const confirm = async () => {
+    setBusy(true)
+    try {
+      await onConfirm()
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <dialog
+      ref={ref}
+      aria-labelledby={titleId}
+      onCancel={(e) => {
+        e.preventDefault()
+        cancel()
+      }}
+      onClick={(e) => e.target === ref.current && cancel()}
+      className="m-auto w-[min(92vw,420px)] rounded-2xl border border-line bg-white p-0 text-ink shadow-xl backdrop:bg-ink/40"
+    >
+      <div className="p-6">
+        <h2 id={titleId} className="text-lg font-bold">
+          {title}
+        </h2>
+        {text && <p className="mt-2 text-sm text-muted">{text}</p>}
+        <div className="mt-6 flex justify-end gap-2">
+          <Button variant="outline" onClick={cancel} disabled={busy}>
+            გაუქმება
+          </Button>
+          <Button variant={danger ? 'danger' : 'primary'} onClick={confirm} loading={busy}>
+            {confirmLabel}
+          </Button>
+        </div>
+      </div>
+    </dialog>
   )
 }
 

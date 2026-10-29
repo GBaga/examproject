@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Phone, Trash2, UserPlus, Users } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Badge, Button, Card, ErrorBox, Field, Input, Spinner } from '../../components/ui'
+import { Badge, Button, Card, ConfirmDialog, ErrorBox, Field, Input, Spinner } from '../../components/ui'
 import { addDriver, listDrivers, removeDriver } from '../../lib/api/company'
 import { useAsync } from '../../lib/hooks'
 import { driverSchema } from '../../lib/schemas'
@@ -10,6 +10,7 @@ import { driverSchema } from '../../lib/schemas'
 export default function DriversManager({ companyId }) {
   const { data: drivers, loading, error, reload } = useAsync(() => listDrivers(companyId), [companyId])
   const [actionError, setActionError] = useState(null)
+  const [toRemove, setToRemove] = useState(null)
 
   const {
     register,
@@ -31,19 +32,29 @@ export default function DriversManager({ companyId }) {
     }
   }
 
-  const onRemove = async (driver) => {
-    if (!window.confirm(`წაიშალოს მძღოლი ${driver.name}?`)) return
+  const onRemove = async () => {
     setActionError(null)
     try {
-      await removeDriver(companyId, driver.id)
+      await removeDriver(companyId, toRemove.id)
       reload()
     } catch (err) {
       setActionError(err.message)
+    } finally {
+      setToRemove(null)
     }
   }
 
   return (
     <Card>
+      <ConfirmDialog
+        open={Boolean(toRemove)}
+        title="მძღოლის წაშლა"
+        text={toRemove && `წაიშალოს მძღოლი ${toRemove.name}?`}
+        confirmLabel="წაშლა"
+        danger
+        onConfirm={onRemove}
+        onCancel={() => setToRemove(null)}
+      />
       <h2 className="mb-4 flex items-center gap-2 font-bold">
         <Users className="size-5 text-brand-600" aria-hidden /> მძღოლები
       </h2>
@@ -66,7 +77,7 @@ export default function DriversManager({ companyId }) {
               <div className="flex items-center gap-2">
                 <Badge tone={d.upcomingTrips > 0 ? 'brand' : 'neutral'}>{d.upcomingTrips} რეისი</Badge>
                 <button
-                  onClick={() => onRemove(d)}
+                  onClick={() => setToRemove(d)}
                   className="rounded-lg p-2 text-muted hover:bg-red-50 hover:text-red-700"
                   aria-label={`${d.name}-ის წაშლა`}
                   title="წაშლა"
