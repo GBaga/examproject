@@ -6,7 +6,8 @@ Skillwill-ის React ფინალური პროექტი (ვარ
 ## გაშვება
 
 ```bash
-cd app
+git clone https://github.com/GBaga/examproject.git && cd examproject/app
+cp .env.example .env   # ჩაწერე MONGODB_URI და AUTH_SECRET
 npm install
 npm run dev        # http://localhost:5173
 npm run build      # production build → dist/
