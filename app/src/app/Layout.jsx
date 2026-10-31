@@ -165,12 +165,25 @@ export default function Layout() {
         </ErrorBoundary>
       </main>
 
-      <footer className="border-t border-line bg-white">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>ლოჯისტიკური პლატფორმა · სქილვილის ფინალური პროექტი · მონაცემები ინახება ღრუბლოვან ბაზაში</p>
-          <button onClick={() => setConfirmReset(true)} className="inline-flex items-center gap-1 self-start hover:text-brand-700 sm:self-auto">
-            <RotateCcw className="size-3.5" aria-hidden /> დემო მონაცემების განულება
-          </button>
+      <footer className="bg-brand-900 text-brand-100">
+        <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10">
+          <p className="text-lg font-semibold sm:text-xl">
+            © {new Date().getFullYear()} ყველა უფლება დაცულია —{' '}
+            <a
+              href="https://bbgeorgiatech.vercel.app/en"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-accent-400 underline decoration-2 underline-offset-4 hover:text-accent-500"
+            >
+              bbgeorgiatech
+            </a>
+          </p>
+          <div className="flex flex-col gap-3 border-t border-brand-700 pt-4 text-sm text-brand-200 sm:flex-row sm:items-center sm:justify-between">
+            <p>ლოჯისტიკური პლატფორმა · სქილვილის ფინალური პროექტი · მონაცემები ინახება ღრუბლოვან ბაზაში</p>
+            <button onClick={() => setConfirmReset(true)} className="inline-flex items-center gap-1 self-start hover:text-white sm:self-auto">
+              <RotateCcw className="size-4" aria-hidden /> დემო მონაცემების განულება
+            </button>
+          </div>
         </div>
       </footer>
 
